@@ -1,0 +1,32 @@
+server:
+  port: 8089
+  env: dev
+  # 签名token
+  signToken: 0ee569b1039911eea41f00ff36392f40
+  # 签名有效期 (秒)
+  expireTime: 60
+jwt:
+  key: abc123
+# 数据库配置
+db:
+  url: root:root@tcp(127.0.0.1:3306)/gin-example?charset=utf8mb4&parseTime=True&loc=Local
+# 日志配置
+log:
+  level: debug
+  filename: ./error.log
+  maxSize: 50 #mb
+  maxBackups: 100 #保留旧日志文件数量
+  maxAge: 30 #日志保留时间（天）
+  compress: true
+  localTime: true
+cors:
+  allowedOriginPatterns:
+    - https://127.0.0.1:18089
+    - http://localhost:18089
+    - http://127.0.0.1:8089
+  allowedMethods: GET,POST,OPTIONS,PUT,DELETE
+  allowedHeaders: Content-Type, Authorization
+  exposeHeaders: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type, New-Token, New-Expires-At
+  maxAge: 3600
+  allowCredentials: false
+

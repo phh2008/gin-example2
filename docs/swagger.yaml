@@ -1,0 +1,714 @@
+basePath: /api/v1
+definitions:
+  entity.PermissionEntity:
+    properties:
+      action:
+        description: 权限动作：比如get、post、delete等
+        type: string
+      createdAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 创建时间
+      createdBy:
+        description: 创建人
+        type: string
+      deleted:
+        description: 是否删除 1-否，2-是
+        type: integer
+      id:
+        description: 主键id
+        type: integer
+      parentId:
+        description: 父级ID：资源层级关系（0表示顶级）
+        type: integer
+      permName:
+        description: 权限名称
+        type: string
+      permType:
+        description: 权限类型：1-菜单、2-按钮
+        type: integer
+      updatedAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 更新时间
+      updatedBy:
+        description: 更新人
+        type: string
+      url:
+        description: URL路径
+        type: string
+    type: object
+  entity.RoleEntity:
+    properties:
+      createdAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 创建时间
+      createdBy:
+        description: 创建人
+        type: string
+      deleted:
+        description: 是否删除 1-否，2-是
+        type: integer
+      id:
+        description: 主键id
+        type: integer
+      roleCode:
+        description: 角色编码
+        type: string
+      roleName:
+        description: 角色名称
+        type: string
+      updatedAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 更新时间
+      updatedBy:
+        description: 更新人
+        type: string
+    type: object
+  model.AssignRoleModel:
+    properties:
+      roleCode:
+        description: 角色编码
+        type: string
+      userId:
+        description: 用户ID
+        type: integer
+    required:
+    - roleCode
+    - userId
+    type: object
+  model.PageData-model_PermissionModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.PermissionModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  model.PageData-model_RoleModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.RoleModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  model.PageData-model_UserModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.UserModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  model.PermissionModel:
+    properties:
+      action:
+        description: 权限动作：比如get、post、delete等
+        type: string
+      id:
+        description: 权限ID
+        type: integer
+      parentId:
+        description: 父级ID：资源层级关系
+        type: integer
+      permName:
+        description: 权限名称
+        type: string
+      permType:
+        description: 权限类型：1-菜单、2-按钮
+        maximum: 2
+        minimum: 1
+        type: integer
+      url:
+        description: URL路径
+        type: string
+    required:
+    - action
+    - permName
+    - permType
+    - url
+    type: object
+  model.RoleAssignPermModel:
+    properties:
+      permIdList:
+        description: 权限ID列表
+        items:
+          type: integer
+        type: array
+      roleId:
+        description: 角色ID
+        type: integer
+    required:
+    - permIdList
+    - roleId
+    type: object
+  model.RoleModel:
+    properties:
+      createAt:
+        description: 创建时间
+        type: string
+      createBy:
+        description: 创建人
+        type: integer
+      id:
+        description: 主键id
+        type: integer
+      roleCode:
+        description: 角色编号
+        type: string
+      roleName:
+        description: 角色名称
+        type: string
+      updateAt:
+        description: 更新时间
+        type: string
+      updateBy:
+        description: 更新人
+        type: integer
+    required:
+    - roleCode
+    - roleName
+    type: object
+  model.UserEmailRegister:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      password:
+        description: 密码
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.UserLoginModel:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      password:
+        description: 密码
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.UserModel:
+    properties:
+      createAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 创建时间
+      createBy:
+        description: 创建人
+        type: integer
+      deleted:
+        description: 是否删除 1-否，2-是
+        type: integer
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 主键id
+        type: integer
+      realName:
+        description: 姓名
+        type: string
+      roleCode:
+        description: 角色编号
+        type: string
+      status:
+        description: '状态: 1-启用，2-禁用'
+        type: integer
+      updateAt:
+        allOf:
+        - $ref: '#/definitions/types.LocalDateTime'
+        description: 更新时间
+      updateBy:
+        description: 更新人
+        type: integer
+      userName:
+        description: 用户名
+        type: string
+    type: object
+  result.Result-any:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-entity_PermissionEntity:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/entity.PermissionEntity'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-entity_RoleEntity:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/entity.RoleEntity'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-model_PageData-model_PermissionModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/model.PageData-model_PermissionModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-model_PageData-model_RoleModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/model.PageData-model_RoleModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-model_PageData-model_UserModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/model.PageData-model_UserModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  result.Result-model_UserModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/model.UserModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  types.LocalDateTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+host: localhost:8089
+info:
+  contact: {}
+  description: 示例API文档.
+  title: 示例API
+  version: "1.0"
+paths:
+  /permission/add:
+    post:
+      consumes:
+      - application/json
+      description: 更新权限
+      parameters:
+      - description: 权限信息
+        in: body
+        name: perm
+        required: true
+        schema:
+          $ref: '#/definitions/model.PermissionModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-entity_PermissionEntity'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新权限
+      tags:
+      - 权限
+  /permission/list:
+    get:
+      consumes:
+      - application/json
+      description: 权限管理列表
+      parameters:
+      - description: 权限动作：比如get、post、delete等
+        in: query
+        name: action
+        type: string
+      - description: 排序类型：asc、desc
+        in: query
+        name: direction
+        type: string
+      - description: 当前页码
+        in: query
+        name: pageNo
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 权限名称
+        in: query
+        name: permName
+        type: string
+      - description: 权限类型：1-菜单、2-按钮
+        in: query
+        name: permType
+        type: integer
+      - description: 排序字段
+        in: query
+        name: sort
+        type: string
+      - description: URL路径
+        in: query
+        name: url
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-model_PageData-model_PermissionModel'
+      security:
+      - ApiKeyAuth: []
+      summary: 权限管理列表
+      tags:
+      - 权限
+  /role/add:
+    post:
+      consumes:
+      - application/json
+      description: 添加角色
+      parameters:
+      - description: 角色信息
+        in: body
+        name: role
+        schema:
+          $ref: '#/definitions/model.RoleModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-entity_RoleEntity'
+      security:
+      - ApiKeyAuth: []
+      summary: 添加角色
+      tags:
+      - 角色
+  /role/assignPermission:
+    post:
+      consumes:
+      - application/json
+      description: 分配权限
+      parameters:
+      - description: 角色与权限信息
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/model.RoleAssignPermModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-any'
+      security:
+      - ApiKeyAuth: []
+      summary: 分配权限
+      tags:
+      - 角色
+  /role/delete/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除角色
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-any'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除角色
+      tags:
+      - 角色
+  /role/list:
+    get:
+      consumes:
+      - application/json
+      description: 角色管理列表
+      parameters:
+      - description: 排序类型：asc、desc
+        in: query
+        name: direction
+        type: string
+      - description: 当前页码
+        in: query
+        name: pageNo
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 角色编号
+        in: query
+        name: roleCode
+        type: string
+      - description: 角色名称
+        in: query
+        name: roleName
+        type: string
+      - description: 排序字段
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-model_PageData-model_RoleModel'
+      security:
+      - ApiKeyAuth: []
+      summary: 角色管理列表
+      tags:
+      - 角色
+  /user/assignRole:
+    post:
+      consumes:
+      - application/json
+      description: 给用户分配角色
+      parameters:
+      - description: 用户ID与角色编号
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssignRoleModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-any'
+      security:
+      - ApiKeyAuth: []
+      summary: 给用户分配角色
+      tags:
+      - 用户
+  /user/createByEmail:
+    post:
+      consumes:
+      - application/json
+      description: 邮箱注册用户
+      parameters:
+      - description: 邮箱与密码
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserEmailRegister'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-model_UserModel'
+      summary: 邮箱注册用户
+      tags:
+      - 用户
+  /user/delete/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 刪除用戶
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-any'
+      security:
+      - ApiKeyAuth: []
+      summary: 刪除用戶
+      tags:
+      - 用户
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      description: 用户管理列表
+      parameters:
+      - description: 排序类型：asc、desc
+        in: query
+        name: direction
+        type: string
+      - description: 邮箱
+        in: query
+        name: email
+        type: string
+      - description: 当前页码
+        in: query
+        name: pageNo
+        type: integer
+      - description: 每页数量
+        in: query
+        name: pageSize
+        type: integer
+      - description: 姓名
+        in: query
+        name: realName
+        type: string
+      - description: 排序字段
+        in: query
+        name: sort
+        type: string
+      - description: '状态: 1-启用，2-禁用'
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-model_PageData-model_UserModel'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户管理列表
+      tags:
+      - 用户
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: 使用邮箱登录
+      parameters:
+      - description: 登录信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/result.Result-any'
+      summary: 使用邮箱登录
+      tags:
+      - 用户
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
