@@ -5,17 +5,17 @@ import (
 )
 
 type UserModel struct {
-	Id       int64               `json:"id"`       // 主键id
-	RealName string              `json:"realName"` // 姓名
-	UserName string              `json:"userName"` // 用户名
-	Email    string              `json:"email"`    // 邮箱
-	Status   int                 `json:"status"`   // 状态: 1-启用，2-禁用
-	RoleCode string              `json:"roleCode"` // 角色编号
-	CreateAt types.LocalDateTime `json:"createAt"` // 创建时间
-	UpdateAt types.LocalDateTime `json:"updateAt"` // 更新时间
-	CreateBy int64               `json:"createBy"` // 创建人
-	UpdateBy int64               `json:"updateBy"` // 更新人
-	Deleted  uint8               `json:"deleted"`  // 是否删除 1-否，2-是
+	Id        int64               `json:"id"`        // 主键id
+	RealName  string              `json:"realName"`  // 姓名
+	UserName  string              `json:"userName"`  // 用户名
+	Email     string              `json:"email"`     // 邮箱
+	Status    int                 `json:"status"`    // 状态: 1-启用，2-禁用
+	RoleCode  string              `json:"roleCode"`  // 角色编号
+	CreatedAt types.LocalDateTime `json:"createdAt"` // 创建时间
+	UpdatedAt types.LocalDateTime `json:"updatedAt"` // 更新时间
+	CreatedBy string              `json:"createdBy"` // 创建人
+	UpdatedBy string              `json:"updatedBy"` // 更新人
+	Deleted   uint8               `json:"deleted"`   // 是否删除 1-否，2-是
 }
 
 type UserListReq struct {

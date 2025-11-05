@@ -21,7 +21,9 @@ type Server struct {
 }
 
 type Db struct {
-	Url string `yaml:"url" json:"url"`
+	Dsn1 string `yaml:"dsn1" json:"dsn1"`
+	Dsn2 string `yaml:"dsn2" json:"dsn2"`
+	Dsn3 string `yaml:"dsn3" json:"dsn3"`
 }
 
 type Jwt struct {
