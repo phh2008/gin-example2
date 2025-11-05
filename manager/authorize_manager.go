@@ -87,11 +87,7 @@ func (a *AuthorizeManager) HasAllPermission(uid string, permissions []string) bo
 	if err != nil || info == nil {
 		return false
 	}
-	cachedPermissions := mapset.NewSet(info.Permissions...)
 	for _, perm := range permissions {
-		if !cachedPermissions.ContainsOne(perm) {
-			return false
-		}
 		var allow bool
 		for _, p := range info.Permissions {
 			if a.matchPermission(p, perm) {
