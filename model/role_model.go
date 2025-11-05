@@ -5,13 +5,13 @@ import (
 )
 
 type RoleModel struct {
-	Id       int64     `json:"id"`                           // 主键id
-	RoleCode string    `json:"roleCode" validate:"required"` // 角色编号
-	RoleName string    `json:"roleName" validate:"required"` // 角色名称
-	CreateAt time.Time `json:"createAt"`                     // 创建时间
-	UpdateAt time.Time `json:"updateAt"`                     // 更新时间
-	CreateBy int64     `json:"createBy"`                     // 创建人
-	UpdateBy int64     `json:"updateBy"`                     // 更新人
+	Id        int64     `json:"id"`                           // 主键id
+	RoleCode  string    `json:"roleCode" validate:"required"` // 角色编号
+	RoleName  string    `json:"roleName" validate:"required"` // 角色名称
+	CreatedAt time.Time `json:"createdAt"`                    // 创建时间
+	UpdatedAt time.Time `json:"updatedAt"`                    // 更新时间
+	CreatedBy string    `json:"createdBy"`                    // 创建人
+	UpdatedBy string    `json:"updatedBy"`                    // 更新人
 }
 
 type RoleListReq struct {
