@@ -3,24 +3,23 @@ package middleware
 import (
 	"time"
 
+	"com.example/example/manager"
 	"com.example/example/model/result"
 	"com.example/example/pkg/common"
 	"com.example/example/pkg/exception"
-	"com.example/example/pkg/logger"
 	"com.example/example/pkg/xjwt"
-	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 )
 
 // Auth 权限中间件
 type Auth struct {
-	jwt      *xjwt.JwtHelper
-	enforcer *casbin.Enforcer
+	jwt              *xjwt.JwtHelper
+	authorizeManager *manager.AuthorizeManager
 }
 
 // NewAuth 创建权限中间件
-func NewAuth(jwt *xjwt.JwtHelper, enforcer *casbin.Enforcer) *Auth {
-	return &Auth{jwt: jwt, enforcer: enforcer}
+func NewAuth(jwt *xjwt.JwtHelper, authorizeManager *manager.AuthorizeManager) *Auth {
+	return &Auth{jwt: jwt, authorizeManager: authorizeManager}
 }
 
 func (a *Auth) authValid(ctx *gin.Context) (xjwt.UserClaims, bool) {
@@ -71,21 +70,14 @@ func (a *Auth) Authorization(action string) gin.HandlerFunc {
 		if !ok {
 			return
 		}
-		// 是否有权限
-		role := user.Role // 当前用户角色
-		obj := ctx.Request.URL.Path
-		act := action
-		if act == "" {
-			act = ctx.Request.Method
-		}
-		ok, err := a.enforcer.Enforce(role, obj, act)
-		if err != nil {
-			logger.Errorf("Enforcer.Enforce error:%s", err.Error())
-			// 鉴权出错了
-			result.Error[any](exception.SysError).Response(ctx)
-			ctx.Abort()
+		// 是否超级管理员
+		ok = a.authorizeManager.HasAllRole(user.ID, []string{common.Admin})
+		if ok {
+			ctx.Next()
 			return
 		}
+		// 是否有权限
+		ok = a.authorizeManager.HasPermission(user.ID, action)
 		if !ok {
 			// 无权限
 			result.Error[any](exception.Unauthorized).Response(ctx)

@@ -54,7 +54,18 @@ func (a *PermissionRepository) FindByIdList(idList []int64) []entity.PermissionE
 	if len(idList) == 0 {
 		return list
 	}
-	db := a.db
-	db.Find(&list, idList)
+	a.GetDb(context.TODO()).Find(&list, idList)
 	return list
+}
+
+func (a *PermissionRepository) FindByUserId(ctx context.Context, userId int64) ([]entity.PermissionEntity, error) {
+	var list []entity.PermissionEntity
+	err := a.GetDb(ctx).Unscoped().Table("sys_user_role a").
+		Select("c.*").
+		Joins("JOIN sys_role_permission b ON a.role_id = b.role_id").
+		Joins("JOIN sys_permission c ON b.perm_id = c.id AND c.deleted=1").
+		Joins("JOIN sys_role d ON a.role_id=d.id AND d.deleted=1").
+		Where("a.user_id=?", userId).
+		Find(&list).Error
+	return list, err
 }

@@ -27,8 +27,7 @@ func (a *RolePermissionRepository) BatchAdd(ctx context.Context, list []*entity.
 	if len(list) == 0 {
 		return nil
 	}
-	db := a.GetDb(ctx).Create(list)
-	return db.Error
+	return a.GetDb(ctx).Create(list).Error
 }
 
 func (a *RolePermissionRepository) ListRoleIdByPermId(ctx context.Context, permId int64) []int64 {

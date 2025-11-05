@@ -1,8 +1,8 @@
 package pkg
 
 import (
+	"com.example/example/pkg/cache"
 	"com.example/example/pkg/orm"
-	"com.example/example/pkg/xcasbin"
 	"com.example/example/pkg/xjwt"
 	"github.com/google/wire"
 )
@@ -11,5 +11,5 @@ import (
 var ProviderSet = wire.NewSet(
 	orm.NewDB,
 	xjwt.NewJwtHelper,
-	xcasbin.NewCasbin,
+	cache.NewMemeryStorage,
 )

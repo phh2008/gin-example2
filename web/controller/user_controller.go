@@ -51,7 +51,7 @@ func (a *UserController) List(ctx *gin.Context) {
 //	@Router			/user/createByEmail [post]
 func (a *UserController) CreateByEmail(ctx *gin.Context) {
 	var email model.UserEmailRegister
-	if err := ctx.ShouldBindQuery(&email); err != nil {
+	if err := ctx.ShouldBindJSON(&email); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}
@@ -71,7 +71,7 @@ func (a *UserController) CreateByEmail(ctx *gin.Context) {
 //	@Router			/user/login [post]
 func (a *UserController) Login(ctx *gin.Context) {
 	var logModel model.UserLoginModel
-	if err := ctx.ShouldBindQuery(&logModel); err != nil {
+	if err := ctx.ShouldBindJSON(&logModel); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}
@@ -86,12 +86,12 @@ func (a *UserController) Login(ctx *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Security		ApiKeyAuth
-//	@Param			query	body		model.AssignRoleModel	true	"用户ID与角色编号"
+//	@Param			query	body		model.AssignRoleModel	true	"用户ID与角色ID"
 //	@Success		200		{object}	result.Result[any]
 //	@Router			/user/assignRole [post]
 func (a *UserController) AssignRole(ctx *gin.Context) {
 	var userRole model.AssignRoleModel
-	if err := ctx.ShouldBindQuery(&userRole); err != nil {
+	if err := ctx.ShouldBindJSON(&userRole); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}

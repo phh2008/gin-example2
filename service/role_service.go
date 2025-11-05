@@ -2,16 +2,18 @@ package service
 
 import (
 	"context"
-	"strconv"
+	"log/slog"
 
 	"com.example/example/entity"
+	"com.example/example/manager"
 	"com.example/example/model"
 	"com.example/example/model/result"
 	"com.example/example/pkg/exception"
 	"com.example/example/pkg/logger"
 	"com.example/example/repository"
-	"github.com/casbin/casbin/v2"
 	"github.com/jinzhu/copier"
+	"github.com/samber/lo"
+	"github.com/spf13/cast"
 )
 
 // RoleService 角色服务
@@ -19,8 +21,9 @@ type RoleService struct {
 	roleRepository           *repository.RoleRepository
 	rolePermissionRepository *repository.RolePermissionRepository
 	permissionRepository     *repository.PermissionRepository
-	enforcer                 *casbin.Enforcer
 	userRepository           *repository.UserRepository
+	userRoleRepository       *repository.UserRoleRepository
+	authorizeManager         *manager.AuthorizeManager
 }
 
 // NewRoleService 创建服务
@@ -28,15 +31,17 @@ func NewRoleService(
 	roleRepository *repository.RoleRepository,
 	rolePermissionRepository *repository.RolePermissionRepository,
 	permissionRepository *repository.PermissionRepository,
-	enforcer *casbin.Enforcer,
+	userRoleRepository *repository.UserRoleRepository,
 	userRepository *repository.UserRepository,
+	authorizeManager *manager.AuthorizeManager,
 ) *RoleService {
 	return &RoleService{
 		roleRepository:           roleRepository,
 		rolePermissionRepository: rolePermissionRepository,
 		permissionRepository:     permissionRepository,
-		enforcer:                 enforcer,
+		userRoleRepository:       userRoleRepository,
 		userRepository:           userRepository,
+		authorizeManager:         authorizeManager,
 	}
 }
 
@@ -49,8 +54,12 @@ func (a *RoleService) ListPage(ctx context.Context, req model.RoleListReq) *resu
 // Add 添加角色
 func (a *RoleService) Add(ctx context.Context, role model.RoleModel) *result.Result[entity.RoleEntity] {
 	var roleEntity entity.RoleEntity
-	copier.Copy(&roleEntity, &role)
-	roleEntity, err := a.roleRepository.Add(ctx, roleEntity)
+	err := copier.Copy(&roleEntity, &role)
+	if err != nil {
+		logger.Errorf("添加角色失败，%s", err.Error())
+		return result.Error[entity.RoleEntity](err)
+	}
+	err = a.roleRepository.Add(ctx, &roleEntity)
 	if err != nil {
 		return result.Error[entity.RoleEntity](err)
 	}
@@ -74,10 +83,8 @@ func (a *RoleService) AssignPermission(ctx context.Context, assign model.RoleAss
 	permList := a.permissionRepository.FindByIdList(assign.PermIdList)
 	// 构建角色与权限关系对象
 	var rolePermList []*entity.RolePermissionEntity // 角色权限关系表数据
-	var permissions [][]string                      // casbin 中的角色与权限数据
 	for _, v := range permList {
 		rolePermList = append(rolePermList, &entity.RolePermissionEntity{PermId: v.Id, RoleId: assign.RoleId})
-		permissions = append(permissions, []string{role.RoleCode, v.Url, v.Action, strconv.FormatInt(v.Id, 10)})
 	}
 	err := a.rolePermissionRepository.Transaction(ctx, func(tx context.Context) error {
 		// 删除原来的角色与权限关系
@@ -89,7 +96,7 @@ func (a *RoleService) AssignPermission(ctx context.Context, assign model.RoleAss
 		// 新增角色与权限关系
 		err = a.rolePermissionRepository.BatchAdd(tx, rolePermList)
 		if err != nil {
-			logger.Errorf("删除操作失败，%s", err.Error())
+			logger.Errorf("保存操作失败，%s", err.Error())
 			return exception.SysError
 		}
 		return err
@@ -97,11 +104,18 @@ func (a *RoleService) AssignPermission(ctx context.Context, assign model.RoleAss
 	if err != nil {
 		return result.Error[any](err)
 	}
-	// 更新casbin中的角色与资源关系
-	a.enforcer.DeletePermissionsForUser(role.RoleCode)
-	if len(permissions) > 0 {
-		a.enforcer.AddPolicies(permissions)
-	}
+	// 清空权限缓存
+	go func() {
+		userRoleList, err := a.userRoleRepository.FindByRoleId(ctx, assign.RoleId)
+		if err != nil {
+			slog.Error("获取用户角色关系失败", "error", err)
+		} else {
+			uidList := lo.Map(userRoleList, func(userRole entity.UserRoleEntity, index int) string {
+				return cast.ToString(userRole.UserId)
+			})
+			_ = a.authorizeManager.ClearCache(uidList...)
+		}
+	}()
 	return result.Success[any]()
 }
 
@@ -127,8 +141,6 @@ func (a *RoleService) DeleteById(ctx context.Context, id int64) *result.Result[a
 		if err != nil {
 			return err
 		}
-		// 删除 casbin 中的角色与资源关系、角色与用户关系
-		_, err = a.enforcer.DeleteRole(role.RoleCode)
 		return err
 	})
 	if err != nil {

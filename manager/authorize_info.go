@@ -1,4 +1,4 @@
-package auth
+package manager
 
 type AuthorizeInfo struct {
 	Uid         string   `json:"uid"`

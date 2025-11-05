@@ -6,35 +6,39 @@ import (
 	"time"
 
 	"com.example/example/entity"
+	"com.example/example/manager"
 	"com.example/example/model"
 	"com.example/example/model/result"
 	"com.example/example/pkg/exception"
 	"com.example/example/pkg/logger"
 	"com.example/example/pkg/xjwt"
 	"com.example/example/repository"
-	"github.com/casbin/casbin/v2"
 	"github.com/cristalhq/jwt/v5"
 	"github.com/jinzhu/copier"
+	"github.com/spf13/cast"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // UserService 用户服务
 type UserService struct {
-	userRepository *repository.UserRepository
-	jwt            *xjwt.JwtHelper
-	enforcer       *casbin.Enforcer
+	userRepository     *repository.UserRepository
+	userRoleRepository *repository.UserRoleRepository
+	authorizeManager   *manager.AuthorizeManager
+	jwt                *xjwt.JwtHelper
 }
 
 // NewUserService 创建服务
 func NewUserService(
 	userRepository *repository.UserRepository,
+	userRoleRepository *repository.UserRoleRepository,
+	authorizeManager *manager.AuthorizeManager,
 	jwt *xjwt.JwtHelper,
-	enforcer *casbin.Enforcer,
 ) *UserService {
 	return &UserService{
-		userRepository: userRepository,
-		jwt:            jwt,
-		enforcer:       enforcer,
+		userRepository:     userRepository,
+		userRoleRepository: userRoleRepository,
+		authorizeManager:   authorizeManager,
+		jwt:                jwt,
 	}
 }
 
@@ -50,7 +54,7 @@ func (a *UserService) CreateByEmail(ctx context.Context, email model.UserEmailRe
 	if user.Id > 0 {
 		return result.FailMsg[model.UserModel]("email 已存在")
 	}
-	pwd, err := bcrypt.GenerateFromPassword([]byte(email.Password), 1)
+	pwd, err := bcrypt.GenerateFromPassword([]byte(email.Password), 10)
 	if err != nil {
 		logger.Errorf("生成密码出错：%s", err.Error())
 		return result.Error[model.UserModel](err)
@@ -70,7 +74,11 @@ func (a *UserService) CreateByEmail(ctx context.Context, email model.UserEmailRe
 		return result.FailMsg[model.UserModel]("创建用户出错")
 	}
 	var userModel model.UserModel
-	copier.Copy(&userModel, &user)
+	err = copier.Copy(&userModel, &user)
+	if err != nil {
+		logger.Errorf("复制出错：%s", err.Error())
+		return result.Error[model.UserModel](err)
+	}
 	return result.Ok[model.UserModel](userModel)
 }
 
@@ -99,18 +107,24 @@ func (a *UserService) LoginByEmail(ctx context.Context, loginModel model.UserLog
 
 // AssignRole 给用户分配角色
 func (a *UserService) AssignRole(ctx context.Context, userRole model.AssignRoleModel) *result.Result[any] {
-	err := a.userRepository.SetRole(ctx, userRole.UserId, userRole.RoleCode)
+	err := a.userRepository.Transaction(ctx, func(tx context.Context) error {
+		err := a.userRoleRepository.DeleteByUserId(tx, userRole.UserId)
+		if err != nil {
+			return err
+		}
+		err = a.userRoleRepository.CreateBatch(tx, []entity.UserRoleEntity{
+			{
+				UserId: userRole.UserId,
+				RoleId: userRole.RoleId},
+		})
+		return err
+	})
 	if err != nil {
-		logger.Errorf("db update error: %s", err.Error())
-		return result.FailMsg[any]("分配角色出错")
+		logger.Errorf("分配角色出错：%s", err.Error())
+		return result.Error[any](err)
 	}
-	// 更新casbin中的用户与角色关系
-	uid := strconv.FormatInt(userRole.UserId, 10)
-	_, _ = a.enforcer.DeleteRolesForUser(uid)
-	// 角色为空，表示清除此用户的角色,无需添加
-	if userRole.RoleCode != "" {
-		_, _ = a.enforcer.AddGroupingPolicy(uid, userRole.RoleCode)
-	}
+	// 清空权限缓存
+	_ = a.authorizeManager.ClearCache(cast.ToString(userRole.UserId))
 	return result.Success[any]()
 }
 
@@ -121,10 +135,7 @@ func (a *UserService) DeleteById(ctx context.Context, id int64) *result.Result[a
 		logger.Errorf("delete error: %s", err.Error())
 		return result.FailMsg[any]("刪除出错")
 	}
-	// 清除 casbin 中用户信息
-	_, err = a.enforcer.DeleteRolesForUser(strconv.FormatInt(id, 10))
-	if err != nil {
-		logger.Errorf("Enforcer.DeleteRolesForUser error: %s", err)
-	}
+	// 清空分配的角色
+	_ = a.userRoleRepository.DeleteByUserId(ctx, id)
 	return result.Success[any]()
 }

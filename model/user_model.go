@@ -36,6 +36,6 @@ type UserLoginModel struct {
 }
 
 type AssignRoleModel struct {
-	UserId   int64  `json:"userId" validate:"required"`   // 用户ID
-	RoleCode string `json:"roleCode" validate:"required"` // 角色编码
+	UserId int64 `json:"userId" validate:"required"` // 用户ID
+	RoleId int64 `json:"roleId" validate:"required"` // 角色ID
 }

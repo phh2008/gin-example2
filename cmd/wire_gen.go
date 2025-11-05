@@ -8,9 +8,10 @@ package main
 
 import (
 	"com.example/example/bootstrap"
+	"com.example/example/manager"
+	"com.example/example/pkg/cache"
 	"com.example/example/pkg/config"
 	"com.example/example/pkg/orm"
-	"com.example/example/pkg/xcasbin"
 	"com.example/example/pkg/xjwt"
 	"com.example/example/repository"
 	"com.example/example/service"
@@ -26,17 +27,19 @@ func BuildServer(conf *config.Config) *bootstrap.Server {
 	engine := bootstrap.NewGin()
 	helloController := controller.NewHelloController()
 	jwtHelper := xjwt.NewJwtHelper(conf)
-	enforcer := xcasbin.NewCasbin(db)
-	auth := middleware.NewAuth(jwtHelper, enforcer)
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, jwtHelper, enforcer)
-	userController := controller.NewUserController(userService)
+	storage := cache.NewMemeryStorage()
+	userRoleRepository := repository.NewUserRoleRepository(db)
 	permissionRepository := repository.NewPermissionRepository(db)
-	permissionService := service.NewPermissionService(permissionRepository, enforcer)
+	authorizeManager := manager.NewAuthorizeManager(storage, userRoleRepository, permissionRepository)
+	auth := middleware.NewAuth(jwtHelper, authorizeManager)
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository, userRoleRepository, authorizeManager, jwtHelper)
+	userController := controller.NewUserController(userService)
+	permissionService := service.NewPermissionService(permissionRepository)
 	permissionController := controller.NewPermissionController(permissionService)
 	roleRepository := repository.NewRoleRepository(db)
-	rolePermissionDao := repository.NewRolePermissionRepository(db)
-	roleService := service.NewRoleService(roleRepository, rolePermissionDao, permissionRepository, enforcer, userRepository)
+	rolePermissionRepository := repository.NewRolePermissionRepository(db)
+	roleService := service.NewRoleService(roleRepository, rolePermissionRepository, permissionRepository, userRoleRepository, userRepository, authorizeManager)
 	roleController := controller.NewRoleController(roleService, userService)
 	routerRouter := &router.Router{
 		Engine:        engine,

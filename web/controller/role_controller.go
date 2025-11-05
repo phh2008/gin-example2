@@ -60,7 +60,7 @@ func (a *RoleController) List(ctx *gin.Context) {
 //	@Router			/role/add [post]
 func (a *RoleController) Add(ctx *gin.Context) {
 	var roleModel model.RoleModel
-	if err := ctx.ShouldBindQuery(&roleModel); err != nil {
+	if err := ctx.ShouldBindJSON(&roleModel); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}
@@ -101,7 +101,7 @@ func (a *RoleController) Delete(ctx *gin.Context) {
 //	@Router			/role/assignPermission [post]
 func (a *RoleController) AssignPermission(ctx *gin.Context) {
 	var assignModel model.RoleAssignPermModel
-	if err := ctx.ShouldBindQuery(&assignModel); err != nil {
+	if err := ctx.ShouldBindJSON(&assignModel); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}

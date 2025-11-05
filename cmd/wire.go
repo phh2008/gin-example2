@@ -7,6 +7,7 @@ package main
 
 import (
 	"com.example/example/bootstrap"
+	"com.example/example/manager"
 	"com.example/example/pkg"
 	"com.example/example/pkg/config"
 	"com.example/example/repository"
@@ -26,6 +27,7 @@ func BuildServer(conf *config.Config) *bootstrap.Server {
 		middleware.ProviderSet,
 		router.ProviderSet,
 		bootstrap.ServerSet,
+		manager.ProviderSet,
 	)
 	return new(bootstrap.Server)
 }

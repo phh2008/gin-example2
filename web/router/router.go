@@ -37,18 +37,18 @@ func (a *Router) Register() {
 	{
 		//用户API
 		v1.POST("/user/login", a.UserApi.Login)
-		v1.GET("/user/list", a.Auth.Authorization("get"), a.UserApi.List)
+		v1.GET("/user/list", a.Auth.Authorization("user:list"), a.UserApi.List)
 		v1.POST("/user/createByEmail", a.UserApi.CreateByEmail)
-		v1.POST("/user/assignRole", a.Auth.Authorization("post"), a.UserApi.AssignRole)
-		v1.DELETE("/user/delete/:id", a.Auth.Authorization("delete"), a.UserApi.DeleteById)
+		v1.POST("/user/assignRole", a.Auth.Authorization("user:assignRole"), a.UserApi.AssignRole)
+		v1.DELETE("/user/delete/:id", a.Auth.Authorization("user:delete"), a.UserApi.DeleteById)
 		//角色API
-		v1.GET("/role/list", a.Auth.Authorization("get"), a.RoleApi.List)
-		v1.POST("/role/add", a.Auth.Authorization("post"), a.RoleApi.Add)
-		v1.POST("/role/assignPermission", a.Auth.Authorization("post"), a.RoleApi.AssignPermission)
-		v1.DELETE("/role/delete/:id", a.Auth.Authorization("delete"), a.RoleApi.Delete)
+		v1.GET("/role/list", a.Auth.Authorization("role:list"), a.RoleApi.List)
+		v1.POST("/role/add", a.Auth.Authorization("role:add"), a.RoleApi.Add)
+		v1.POST("/role/assignPermission", a.Auth.Authorization("role:assignPermission"), a.RoleApi.AssignPermission)
+		v1.DELETE("/role/delete/:id", a.Auth.Authorization("role:delete"), a.RoleApi.Delete)
 		//权限API
-		v1.GET("/permission/list", a.Auth.Authorization("get"), a.PermissionApi.List)
-		v1.POST("/permission/add", a.Auth.Authorization("post"), a.PermissionApi.Add)
-		v1.POST("/permission/update", a.Auth.Authorization("post"), a.PermissionApi.Update)
+		v1.GET("/permission/list", a.Auth.Authorization("permission:list"), a.PermissionApi.List)
+		v1.POST("/permission/add", a.Auth.Authorization("permission:add"), a.PermissionApi.Add)
+		v1.POST("/permission/update", a.Auth.Authorization("permission:update"), a.PermissionApi.Update)
 	}
 }

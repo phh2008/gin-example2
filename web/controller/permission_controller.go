@@ -52,7 +52,7 @@ func (a *PermissionController) List(ctx *gin.Context) {
 //	@Router			/permission/add [post]
 func (a *PermissionController) Add(ctx *gin.Context) {
 	var perm model.PermissionModel
-	if err := ctx.ShouldBindQuery(&perm); err != nil {
+	if err := ctx.ShouldBindJSON(&perm); err != nil {
 		result.Error[any](err).Response(ctx)
 		return
 	}

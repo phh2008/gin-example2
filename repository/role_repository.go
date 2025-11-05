@@ -35,14 +35,13 @@ func (a *RoleRepository) ListPage(ctx context.Context, req model.RoleListReq) mo
 }
 
 // Add 添加角色
-func (a *RoleRepository) Add(ctx context.Context, entity entity.RoleEntity) (entity.RoleEntity, error) {
+func (a *RoleRepository) Add(ctx context.Context, entity *entity.RoleEntity) error {
 	// 检查角色是否存在
 	role := a.GetByCode(ctx, entity.RoleCode)
 	if role.Id > 0 {
-		return entity, exception.NewBizError("500", "角色已存在")
+		return exception.NewBizError("500", "角色已存在")
 	}
-	db := a.GetDb(ctx).Create(&entity)
-	return entity, db.Error
+	return a.GetDb(ctx).Create(&entity).Error
 }
 
 // GetByCode 根据角色编号获取角色
