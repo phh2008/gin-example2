@@ -13,7 +13,7 @@ func TestCreateSign(t *testing.T) {
 	conf := config.NewConfig("../../config")
 	var data = map[string]interface{}{
 		signKey:      "",
-		anonKey:      "abc",
+		nonceKey:     "abc",
 		timestampKey: time.Now().Unix(),
 		"openId":     "oylxy5HqJ630VVOw1CR3diqUzfuQ",
 	}

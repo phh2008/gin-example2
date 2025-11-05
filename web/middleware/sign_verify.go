@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"reflect"
 	"sort"
 	"strconv"
@@ -16,14 +17,13 @@ import (
 	"com.example/example/model/result"
 	"com.example/example/pkg/config"
 	"com.example/example/pkg/exception"
-	"com.example/example/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
 
 const signKey = "sign"
 const timestampKey = "timestamp"
-const anonKey = "anon"
+const nonceKey = "nonce"
 
 const expireTime int64 = 60
 
@@ -36,13 +36,13 @@ func SignVerify(conf *config.Config) gin.HandlerFunc {
 		ctx.Request.Body = io.NopCloser(bytes.NewReader(body))
 		err = json.Unmarshal(body, &data)
 		if err != nil {
-			logger.Errorf("参数解析错误：%s", err)
+			slog.Error("参数解析错误", "error", err)
 			result.Error[any](exception.ParamError).Response(ctx)
 			ctx.Abort()
 			return
 		}
-		if v, ok := data[anonKey]; !ok || cast.ToString(v) == "" {
-			result.Error[any](errors.New("缺少参数：" + anonKey)).Response(ctx)
+		if v, ok := data[nonceKey]; !ok || cast.ToString(v) == "" {
+			result.Error[any](errors.New("缺少参数：" + nonceKey)).Response(ctx)
 			ctx.Abort()
 			return
 		}

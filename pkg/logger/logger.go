@@ -2,6 +2,7 @@ package logger
 
 import (
 	"io"
+	"log/slog"
 	"os"
 	"strings"
 	"time"
@@ -9,13 +10,16 @@ import (
 	"com.example/example/pkg/config"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
+	"go.uber.org/zap/exp/zapslog"
 	"go.uber.org/zap/zapcore"
 )
 
-var log *zap.Logger = zap.L()
-var slog *zap.SugaredLogger = log.Sugar()
-var wrapLog = copyLog(zap.L()).WithOptions(zap.AddCallerSkip(1))
-var wrapSugarLog = wrapLog.Sugar()
+func init() {
+	// 做为slog的后端
+	zapLog := zap.NewNop()
+	sl := slog.New(zapslog.NewHandler(zapLog.Core(), zapslog.WithCaller(true)))
+	slog.SetDefault(sl)
+}
 
 var levelMap = map[string]zapcore.Level{
 	"debug": zapcore.DebugLevel,
@@ -24,106 +28,37 @@ var levelMap = map[string]zapcore.Level{
 	"error": zapcore.ErrorLevel,
 }
 
+type Config struct {
+	Level      string // 日志级别: debug, info, warn, error
+	Filename   string // 日志文件路径
+	MaxSize    int32  // 每个日志文件保存的最大尺寸 单位：M
+	MaxBackups int32  // 保留旧日志文件数量
+	MaxAge     int32  // 日志保留时间（天）
+	Compress   bool   // 是否压缩
+	LocalTime  bool   // 是否使用本地时间
+}
+
 // NewLogger 创建 logger
-func NewLogger(config *config.Config) *zap.Logger {
-	log = newZapLog(config)
-	slog = log.Sugar()
-	// 替换 zap 全局 log
-	zap.ReplaceGlobals(log)
-	// 包装 log
-	wrapLog = copyLog(log).WithOptions(zap.AddCallerSkip(1))
-	wrapSugarLog = wrapLog.Sugar()
-	return log
-}
-
-func copyLog(log *zap.Logger) *zap.Logger {
-	l := *log
-	return &l
-}
-
-func L() *zap.Logger {
-	l := log
-	return l
-}
-
-func S() *zap.SugaredLogger {
-	s := slog
-	return s
-}
-
-// Debug as zap.L().Debug
-func Debug(msg string, fields ...zap.Field) {
-	wrapLog.Debug(msg, fields...)
-}
-
-// Info as zap.L().Info
-func Info(msg string, fields ...zap.Field) {
-	wrapLog.Info(msg, fields...)
-}
-
-// Warn as zap.L().Warn
-func Warn(msg string, fields ...zap.Field) {
-	wrapLog.Warn(msg, fields...)
-}
-
-// Error as zap.L().Error
-func Error(msg string, fields ...zap.Field) {
-	wrapLog.Error(msg, fields...)
-}
-
-// Debugf as zap.S().Debugf
-func Debugf(template string, args ...interface{}) {
-	wrapSugarLog.Debugf(template, args...)
-}
-
-// Infof zap.S().Infof
-func Infof(template string, args ...interface{}) {
-	wrapSugarLog.Infof(template, args...)
-}
-
-// Warnf zap.S().Warnf
-func Warnf(template string, args ...interface{}) {
-	wrapSugarLog.Warnf(template, args...)
-}
-
-// Errorf as zap.S().Errorf
-func Errorf(template string, args ...interface{}) {
-	wrapSugarLog.Errorf(template, args...)
-}
-
-// Debugs uses fmt.Sprint to construct and log a message.
-func Debugs(args ...interface{}) {
-	wrapSugarLog.Debug(args...)
-}
-
-// Infos uses fmt.Sprint to construct and log a message.
-func Infos(args ...interface{}) {
-	wrapSugarLog.Info(args...)
-}
-
-// Warns uses fmt.Sprint to construct and log a message.
-func Warns(args ...interface{}) {
-	wrapSugarLog.Warn(args...)
-}
-
-// Errors uses fmt.Sprint to construct and log a message.
-func Errors(args ...interface{}) {
-	wrapSugarLog.Error(args...)
+func NewLogger(conf *config.Config) *zap.Logger {
+	zapLog := newZapLog(&conf.Log)
+	// 替换 zap 全局 zapLog
+	zap.ReplaceGlobals(zapLog)
+	return zapLog
 }
 
 // getWriter
-func getWriter(config *config.Config) io.Writer {
+func getWriter(config *config.Log) io.Writer {
 	return &lumberjack.Logger{
-		Filename:   config.Log.Filename,
-		MaxSize:    config.Log.MaxSize, // megabytes
-		MaxBackups: config.Log.MaxBackups,
-		MaxAge:     config.Log.MaxAge, //days
-		LocalTime:  config.Log.LocalTime,
-		Compress:   config.Log.Compress, // disabled by default
+		Filename:   config.Filename,
+		MaxSize:    config.MaxSize, // megabytes
+		MaxBackups: config.MaxBackups,
+		MaxAge:     config.MaxAge, //days
+		LocalTime:  config.LocalTime,
+		Compress:   config.Compress, // disabled by default
 	}
 }
 
-func newZapLog(config *config.Config) *zap.Logger {
+func newZapLog(conf *config.Log) *zap.Logger {
 	// 设置日志格式
 	//encoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
 	encoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
@@ -143,11 +78,11 @@ func newZapLog(config *config.Config) *zap.Logger {
 
 	// 记录什么级别的日志
 	level := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= levelMap[strings.ToLower(config.Log.Level)]
+		return lvl >= levelMap[strings.ToLower(conf.Level)]
 	})
 
 	// 获取 info、error日志文件的io.Writer 抽象 getWriter() 在下方实现
-	writer := zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(getWriter(config)))
+	writer := zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(getWriter(conf)))
 	// 如果info、debug、error分文件记录，就创建多个 writer
 	// 最后创建具体的Logger
 	core := zapcore.NewTee(

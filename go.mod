@@ -21,6 +21,7 @@ require (
 	github.com/jinzhu/copier v0.4.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/redis/go-redis/v9 v9.16.0
+	github.com/samber/lo v1.52.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/showa-93/go-mask v0.6.2
 	github.com/spf13/cast v1.7.1
@@ -81,7 +82,6 @@ require (
 	github.com/quic-go/quic-go v0.54.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
-	github.com/samber/lo v1.52.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect

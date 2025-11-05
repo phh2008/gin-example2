@@ -2,23 +2,39 @@ package orm
 
 import (
 	"fmt"
+	"log/slog"
+	"time"
 
 	"com.example/example/model"
 	"com.example/example/pkg/config"
+	"com.example/example/pkg/logger/glog"
 	"com.example/example/pkg/xstring"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 // NewDB 创建 gorm.DB
-func NewDB(config *config.Config) *gorm.DB {
-	var gdb, err = gorm.Open(mysql.Open(config.Db.Url), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+func NewDB(conf *config.Config) *gorm.DB {
+	cfg := glog.NewConfig(slog.Default().Handler()).
+		//WithGroupKey("db").
+		WithSlowThreshold(time.Second).
+		WithIgnoreRecordNotFoundError(true).
+		WithTraceAll(true)
+	glogger := glog.NewWithConfig(cfg)
+	var gdb, err = gorm.Open(mysql.Open(conf.Db.Url), &gorm.Config{
+		Logger: glogger,
 	})
 	if err != nil {
 		panic(err)
 	}
+	// 设置连接池参数
+	sqlDB, err := gdb.DB()
+	if err != nil {
+		panic(err)
+	}
+	sqlDB.SetMaxIdleConns(10)           // 空闲最大连接数
+	sqlDB.SetMaxOpenConns(60)           // 最大打开连接数
+	sqlDB.SetConnMaxLifetime(time.Hour) // 连接可重用的时长
 	return gdb
 }
 

@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
+	"log/slog"
 
 	"com.example/example/entity"
 	"com.example/example/model"
 	"com.example/example/model/result"
 	"com.example/example/pkg/exception"
-	"com.example/example/pkg/logger"
 	"com.example/example/repository"
 	"github.com/jinzhu/copier"
 )
@@ -37,12 +37,12 @@ func (a *PermissionService) Add(ctx context.Context, perm model.PermissionModel)
 	var permission entity.PermissionEntity
 	err := copier.Copy(&permission, &perm)
 	if err != nil {
-		logger.Errorf("添加权限资源失败，%s", err.Error())
+		slog.Error("添加权限资源失败", "error", err)
 		return result.Error[entity.PermissionEntity](err)
 	}
 	res, err := a.permissionRepository.Add(ctx, permission)
 	if err != nil {
-		logger.Errorf("添加权限资源失败，%s", err.Error())
+		slog.Error("添加权限资源失败", "error", err)
 		return result.Error[entity.PermissionEntity](err)
 	}
 	return result.Ok(res)
@@ -57,13 +57,13 @@ func (a *PermissionService) Update(ctx context.Context, perm model.PermissionMod
 	var permission entity.PermissionEntity
 	err := copier.Copy(&permission, &perm)
 	if err != nil {
-		logger.Errorf("更新权限资源失败，%s", err.Error())
+		slog.Error("更新权限资源失败", "error", err)
 		return result.FailMsg[*entity.PermissionEntity]("更新权限资源失败")
 	}
 	// 更新权限资源表
 	res, err := a.permissionRepository.Update(ctx, permission)
 	if err != nil {
-		logger.Errorf("更新权限资源失败，%s", err.Error())
+		slog.Error("更新权限资源失败", "error", err)
 		return result.FailMsg[*entity.PermissionEntity]("更新权限资源失败")
 	}
 	return result.Ok(&res)

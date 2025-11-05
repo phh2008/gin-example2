@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	"com.example/example/model"
 	"com.example/example/model/result"
 	"com.example/example/pkg/exception"
-	"com.example/example/pkg/logger"
 	"com.example/example/pkg/xjwt"
 	"com.example/example/repository"
 	"github.com/cristalhq/jwt/v5"
@@ -56,7 +56,7 @@ func (a *UserService) CreateByEmail(ctx context.Context, email model.UserEmailRe
 	}
 	pwd, err := bcrypt.GenerateFromPassword([]byte(email.Password), 10)
 	if err != nil {
-		logger.Errorf("生成密码出错：%s", err.Error())
+		slog.Error("生成密码出错", "error", err)
 		return result.Error[model.UserModel](err)
 	}
 
@@ -70,13 +70,13 @@ func (a *UserService) CreateByEmail(ctx context.Context, email model.UserEmailRe
 	}
 	user, err = a.userRepository.Add(ctx, user)
 	if err != nil {
-		logger.Errorf("创建用户出错：%s", err.Error())
+		slog.Error("创建用户出错", "error", err)
 		return result.FailMsg[model.UserModel]("创建用户出错")
 	}
 	var userModel model.UserModel
 	err = copier.Copy(&userModel, &user)
 	if err != nil {
-		logger.Errorf("复制出错：%s", err.Error())
+		slog.Error("copier.Copy拷贝出错", "error", err.Error())
 		return result.Error[model.UserModel](err)
 	}
 	return result.Ok[model.UserModel](userModel)
@@ -99,7 +99,7 @@ func (a *UserService) LoginByEmail(ctx context.Context, loginModel model.UserLog
 	userClaims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7))
 	token, err := a.jwt.CreateToken(userClaims)
 	if err != nil {
-		logger.Errorf("生成token错误：%s", err.Error())
+		slog.Error("生成token错误", "error", err)
 		return result.Error[string](exception.SysError)
 	}
 	return result.Ok[string](token.String())
@@ -120,7 +120,7 @@ func (a *UserService) AssignRole(ctx context.Context, userRole model.AssignRoleM
 		return err
 	})
 	if err != nil {
-		logger.Errorf("分配角色出错：%s", err.Error())
+		slog.Error("分配角色出错", "error", err)
 		return result.Error[any](err)
 	}
 	// 清空权限缓存
@@ -132,7 +132,7 @@ func (a *UserService) AssignRole(ctx context.Context, userRole model.AssignRoleM
 func (a *UserService) DeleteById(ctx context.Context, id int64) *result.Result[any] {
 	err := a.userRepository.DeleteById(ctx, id)
 	if err != nil {
-		logger.Errorf("delete error: %s", err.Error())
+		slog.Error("删除用户出错", "error", err)
 		return result.FailMsg[any]("刪除出错")
 	}
 	// 清空分配的角色

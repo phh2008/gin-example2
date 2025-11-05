@@ -9,7 +9,6 @@ import (
 	"com.example/example/model"
 	"com.example/example/model/result"
 	"com.example/example/pkg/exception"
-	"com.example/example/pkg/logger"
 	"com.example/example/repository"
 	"github.com/jinzhu/copier"
 	"github.com/samber/lo"
@@ -56,7 +55,7 @@ func (a *RoleService) Add(ctx context.Context, role model.RoleModel) *result.Res
 	var roleEntity entity.RoleEntity
 	err := copier.Copy(&roleEntity, &role)
 	if err != nil {
-		logger.Errorf("添加角色失败，%s", err.Error())
+		slog.Error("添加角色失败", "error", err)
 		return result.Error[entity.RoleEntity](err)
 	}
 	err = a.roleRepository.Add(ctx, &roleEntity)
@@ -90,13 +89,13 @@ func (a *RoleService) AssignPermission(ctx context.Context, assign model.RoleAss
 		// 删除原来的角色与权限关系
 		err := a.rolePermissionRepository.DeleteByRoleId(tx, assign.RoleId)
 		if err != nil {
-			logger.Errorf("删除操作失败，%s", err.Error())
+			slog.Error("删除操作失败", "error", err)
 			return exception.SysError
 		}
 		// 新增角色与权限关系
 		err = a.rolePermissionRepository.BatchAdd(tx, rolePermList)
 		if err != nil {
-			logger.Errorf("保存操作失败，%s", err.Error())
+			slog.Error("保存操作失败", "error", err)
 			return exception.SysError
 		}
 		return err
@@ -144,7 +143,7 @@ func (a *RoleService) DeleteById(ctx context.Context, id int64) *result.Result[a
 		return err
 	})
 	if err != nil {
-		logger.Errorf("删除角色操作失败，%s", err)
+		slog.Error("删除角色操作失败", "error", err)
 		return result.Error[any](exception.SysError)
 	}
 	return result.Success[any]()
