@@ -11,6 +11,7 @@ import (
 	"com.example/example/pkg/xstring"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/dbresolver"
 )
 
 // NewDB 创建 gorm.DB
@@ -21,20 +22,32 @@ func NewDB(conf *config.Config) *gorm.DB {
 		WithIgnoreRecordNotFoundError(true).
 		WithTraceAll(true)
 	glogger := glog.NewWithConfig(cfg)
-	var gdb, err = gorm.Open(mysql.Open(conf.Db.Url), &gorm.Config{
+	var gdb, err = gorm.Open(mysql.Open(conf.Db.Dsn1), &gorm.Config{
 		Logger: glogger,
 	})
 	if err != nil {
 		panic(err)
 	}
-	// 设置连接池参数
-	sqlDB, err := gdb.DB()
+	err = gdb.Use(dbresolver.Register(dbresolver.Config{
+		Sources: []gorm.Dialector{mysql.Open(conf.Db.Dsn2)},
+	}, "sys_permission").Register(dbresolver.Config{
+		Sources: []gorm.Dialector{mysql.Open(conf.Db.Dsn3)},
+	}, "sys_role").
+		SetConnMaxIdleTime(time.Hour).
+		SetConnMaxLifetime(24 * time.Hour).
+		SetMaxIdleConns(10).
+		SetMaxOpenConns(50))
 	if err != nil {
 		panic(err)
 	}
-	sqlDB.SetMaxIdleConns(10)           // 空闲最大连接数
-	sqlDB.SetMaxOpenConns(60)           // 最大打开连接数
-	sqlDB.SetConnMaxLifetime(time.Hour) // 连接可重用的时长
+	// 设置连接池参数
+	//sqlDB, err := gdb.DB()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//sqlDB.SetMaxIdleConns(10)           // 空闲最大连接数
+	//sqlDB.SetMaxOpenConns(60)           // 最大打开连接数
+	//sqlDB.SetConnMaxLifetime(time.Hour) // 连接可重用的时长
 	return gdb
 }
 

@@ -9,7 +9,9 @@ jwt:
   key: abc123
 # 数据库配置
 db:
-  url: root:root@tcp(127.0.0.1:3306)/gin-example?charset=utf8mb4&parseTime=True&loc=Local
+  dsn1: root:root@tcp(127.0.0.1:3306)/gin-example?charset=utf8mb4&parseTime=True&loc=Local
+  dsn2: root:root@tcp(127.0.0.1:3306)/gin-example2?charset=utf8mb4&parseTime=True&loc=Local
+  dsn3: root:root@tcp(127.0.0.1:3306)/gin-example3?charset=utf8mb4&parseTime=True&loc=Local
 # 日志配置
 log:
   level: debug
