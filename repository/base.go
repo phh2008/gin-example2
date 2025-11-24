@@ -36,33 +36,30 @@ func (a *BaseRepository[T]) GetDb(ctx context.Context) *gorm.DB {
 }
 
 // GetById 根据ID查询
-func (a *BaseRepository[T]) GetById(ctx context.Context, id int64) (T, error) {
+func (a *BaseRepository[T]) GetById(ctx context.Context, id int64) (*T, error) {
 	var domain T
 	err := a.GetDb(ctx).Limit(1).Find(&domain, id).Error
-	return domain, err
+	return &domain, err
 }
 
 // Insert 新增
-func (a *BaseRepository[T]) Insert(ctx context.Context, entity T) (T, error) {
-	ret := a.GetDb(ctx).Create(&entity)
-	return entity, ret.Error
+func (a *BaseRepository[T]) Insert(ctx context.Context, entity *T) error {
+	return a.GetDb(ctx).Create(entity).Error
 }
 
 // Update 更新
-func (a *BaseRepository[T]) Update(ctx context.Context, entity T) (T, error) {
-	db := a.GetDb(ctx).Model(&entity).Updates(entity)
-	return entity, db.Error
+func (a *BaseRepository[T]) Update(ctx context.Context, entity *T) error {
+	return a.GetDb(ctx).Model(entity).Updates(entity).Error
 }
 
 // DeleteById 根据ID删除
 func (a *BaseRepository[T]) DeleteById(ctx context.Context, id int64) error {
-	db := a.GetDb(ctx).Delete(new(T), id)
-	return db.Error
+	return a.GetDb(ctx).Delete(new(T), id).Error
 }
 
 // ListByIds 根据ID集合查询
 func (a *BaseRepository[T]) ListByIds(ctx context.Context, ids []int64) ([]T, error) {
 	var list []T
-	db := a.GetDb(ctx).Find(&list, ids)
-	return list, db.Error
+	err := a.GetDb(ctx).Find(&list, ids).Error
+	return list, err
 }

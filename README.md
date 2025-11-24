@@ -6,5 +6,5 @@
 wire
 ```   
 3.生成swagger文档   
-`swag init --parseDependency --parseInternal`
+`swag init --parseDependency --parseInternal -g cmd/main.go`
 

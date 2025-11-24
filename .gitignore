@@ -50,6 +50,8 @@ fabric.properties
 go.sum
 *.log
 bin/
+cmd/__debug_bin.exe*
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+config/config-dev.yaml

@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -21,7 +23,11 @@ type Server struct {
 }
 
 type Db struct {
-	Url string `yaml:"url" json:"url"`
+	Url             string        `yaml:"url" json:"url"`
+	ConnMaxIdleTime time.Duration `yaml:"connMaxIdleTime" json:"connMaxIdleTime"`
+	ConnMaxLifetime time.Duration `yaml:"connMaxLifetime" json:"connMaxLifetime"`
+	MaxIdleConns    int           `yaml:"maxIdleConns" json:"maxIdleConns"`
+	MaxOpenConns    int           `yaml:"maxOpenConns" json:"maxOpenConns"`
 }
 
 type Jwt struct {

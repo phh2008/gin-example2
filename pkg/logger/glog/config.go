@@ -23,14 +23,14 @@ func NewConfig(h slog.Handler) *Config {
 		groupKey:                  "",
 		errorKey:                  "error",
 		slowThresholdKey:          "slow_threshold",
-		queryKey:                  "query",
+		queryKey:                  "sql",
 		durationKey:               "duration",
 		rowsKey:                   "rows",
 		sourceKey:                 "file",
 		fullSourcePath:            false,
-		okMsg:                     "Query OK",
-		slowMsg:                   "Query SLOW",
-		errorMsg:                  "Query ERROR",
+		okMsg:                     "Sql OK",
+		slowMsg:                   "Sql SLOW",
+		errorMsg:                  "Sql ERROR",
 	}
 }
 

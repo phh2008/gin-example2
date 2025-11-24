@@ -1,5 +1,171 @@
 basePath: /api/v1
 definitions:
+  com_example_example_model.PageData-model_PermissionModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.PermissionModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  com_example_example_model.PageData-model_RoleModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.RoleModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  com_example_example_model.PageData-model_UserModel:
+    properties:
+      count:
+        description: 总记录数
+        type: integer
+      data:
+        description: 分页数据
+        items:
+          $ref: '#/definitions/model.UserModel'
+        type: array
+      pageNo:
+        description: 当前页码
+        type: integer
+      pageSize:
+        description: 每页数量
+        type: integer
+    type: object
+  com_example_example_model_result.Result-any:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-com_example_example_model_PageData-model_PermissionModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/com_example_example_model.PageData-model_PermissionModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-com_example_example_model_PageData-model_RoleModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/com_example_example_model.PageData-model_RoleModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-com_example_example_model_PageData-model_UserModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/com_example_example_model.PageData-model_UserModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-entity_PermissionEntity:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/entity.PermissionEntity'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-entity_RoleEntity:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/entity.RoleEntity'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_model_result.Result-model_UserModel:
+    properties:
+      code:
+        description: 响应码，200表示成功，其它为失败
+        type: string
+      data:
+        allOf:
+        - $ref: '#/definitions/model.UserModel'
+        description: 响应数据
+      message:
+        description: 错误信息
+        type: string
+      timeStamp:
+        description: 时间戳
+        type: integer
+    type: object
+  com_example_example_pkg_types.LocalDateTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
   entity.PermissionEntity:
     properties:
       action:
@@ -7,7 +173,7 @@ definitions:
         type: string
       createdAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 创建时间
       createdBy:
         description: 创建人
@@ -29,7 +195,7 @@ definitions:
         type: integer
       updatedAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 更新时间
       updatedBy:
         description: 更新人
@@ -42,7 +208,7 @@ definitions:
     properties:
       createdAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 创建时间
       createdBy:
         description: 创建人
@@ -61,7 +227,7 @@ definitions:
         type: string
       updatedAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 更新时间
       updatedBy:
         description: 更新人
@@ -69,66 +235,15 @@ definitions:
     type: object
   model.AssignRoleModel:
     properties:
-      roleCode:
-        description: 角色编码
-        type: string
+      roleId:
+        description: 角色ID
+        type: integer
       userId:
         description: 用户ID
         type: integer
     required:
-    - roleCode
+    - roleId
     - userId
-    type: object
-  model.PageData-model_PermissionModel:
-    properties:
-      count:
-        description: 总记录数
-        type: integer
-      data:
-        description: 分页数据
-        items:
-          $ref: '#/definitions/model.PermissionModel'
-        type: array
-      pageNo:
-        description: 当前页码
-        type: integer
-      pageSize:
-        description: 每页数量
-        type: integer
-    type: object
-  model.PageData-model_RoleModel:
-    properties:
-      count:
-        description: 总记录数
-        type: integer
-      data:
-        description: 分页数据
-        items:
-          $ref: '#/definitions/model.RoleModel'
-        type: array
-      pageNo:
-        description: 当前页码
-        type: integer
-      pageSize:
-        description: 每页数量
-        type: integer
-    type: object
-  model.PageData-model_UserModel:
-    properties:
-      count:
-        description: 总记录数
-        type: integer
-      data:
-        description: 分页数据
-        items:
-          $ref: '#/definitions/model.UserModel'
-        type: array
-      pageNo:
-        description: 当前页码
-        type: integer
-      pageSize:
-        description: 每页数量
-        type: integer
     type: object
   model.PermissionModel:
     properties:
@@ -174,12 +289,12 @@ definitions:
     type: object
   model.RoleModel:
     properties:
-      createAt:
+      createdAt:
         description: 创建时间
         type: string
-      createBy:
+      createdBy:
         description: 创建人
-        type: integer
+        type: string
       id:
         description: 主键id
         type: integer
@@ -189,12 +304,12 @@ definitions:
       roleName:
         description: 角色名称
         type: string
-      updateAt:
+      updatedAt:
         description: 更新时间
         type: string
-      updateBy:
+      updatedBy:
         description: 更新人
-        type: integer
+        type: string
     required:
     - roleCode
     - roleName
@@ -225,13 +340,13 @@ definitions:
     type: object
   model.UserModel:
     properties:
-      createAt:
+      createdAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 创建时间
-      createBy:
+      createdBy:
         description: 创建人
-        type: integer
+        type: string
       deleted:
         description: 是否删除 1-否，2-是
         type: integer
@@ -250,130 +365,15 @@ definitions:
       status:
         description: '状态: 1-启用，2-禁用'
         type: integer
-      updateAt:
+      updatedAt:
         allOf:
-        - $ref: '#/definitions/types.LocalDateTime'
+        - $ref: '#/definitions/com_example_example_pkg_types.LocalDateTime'
         description: 更新时间
-      updateBy:
+      updatedBy:
         description: 更新人
-        type: integer
+        type: string
       userName:
         description: 用户名
-        type: string
-    type: object
-  result.Result-any:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-entity_PermissionEntity:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/entity.PermissionEntity'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-entity_RoleEntity:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/entity.RoleEntity'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-model_PageData-model_PermissionModel:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/model.PageData-model_PermissionModel'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-model_PageData-model_RoleModel:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/model.PageData-model_RoleModel'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-model_PageData-model_UserModel:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/model.PageData-model_UserModel'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  result.Result-model_UserModel:
-    properties:
-      code:
-        description: 响应码，200表示成功，其它为失败
-        type: string
-      data:
-        allOf:
-        - $ref: '#/definitions/model.UserModel'
-        description: 响应数据
-      message:
-        description: 错误信息
-        type: string
-      timeStamp:
-        description: 时间戳
-        type: integer
-    type: object
-  types.LocalDateTime:
-    properties:
-      time.Time:
         type: string
     type: object
 host: localhost:8089
@@ -401,7 +401,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-entity_PermissionEntity'
+            $ref: '#/definitions/com_example_example_model_result.Result-entity_PermissionEntity'
       security:
       - ApiKeyAuth: []
       summary: 更新权限
@@ -451,7 +451,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-model_PageData-model_PermissionModel'
+            $ref: '#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_PermissionModel'
       security:
       - ApiKeyAuth: []
       summary: 权限管理列表
@@ -474,7 +474,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-entity_RoleEntity'
+            $ref: '#/definitions/com_example_example_model_result.Result-entity_RoleEntity'
       security:
       - ApiKeyAuth: []
       summary: 添加角色
@@ -498,7 +498,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-any'
+            $ref: '#/definitions/com_example_example_model_result.Result-any'
       security:
       - ApiKeyAuth: []
       summary: 分配权限
@@ -521,7 +521,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-any'
+            $ref: '#/definitions/com_example_example_model_result.Result-any'
       security:
       - ApiKeyAuth: []
       summary: 删除角色
@@ -563,7 +563,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-model_PageData-model_RoleModel'
+            $ref: '#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_RoleModel'
       security:
       - ApiKeyAuth: []
       summary: 角色管理列表
@@ -575,7 +575,7 @@ paths:
       - application/json
       description: 给用户分配角色
       parameters:
-      - description: 用户ID与角色编号
+      - description: 用户ID与角色ID
         in: body
         name: query
         required: true
@@ -587,7 +587,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-any'
+            $ref: '#/definitions/com_example_example_model_result.Result-any'
       security:
       - ApiKeyAuth: []
       summary: 给用户分配角色
@@ -611,7 +611,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-model_UserModel'
+            $ref: '#/definitions/com_example_example_model_result.Result-model_UserModel'
       summary: 邮箱注册用户
       tags:
       - 用户
@@ -632,7 +632,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-any'
+            $ref: '#/definitions/com_example_example_model_result.Result-any'
       security:
       - ApiKeyAuth: []
       summary: 刪除用戶
@@ -678,7 +678,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-model_PageData-model_UserModel'
+            $ref: '#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_UserModel'
       security:
       - ApiKeyAuth: []
       summary: 用户管理列表
@@ -702,7 +702,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/result.Result-any'
+            $ref: '#/definitions/com_example_example_model_result.Result-any'
       summary: 使用邮箱登录
       tags:
       - 用户

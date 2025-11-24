@@ -20,7 +20,7 @@ import (
 func main() {
 	// 参数
 	flag.StringVar(&config.Path, "config", "./config", "指定配置文件目录，示例: -config ./config")
-	flag.StringVar(&config.Active, "active", "dev", "指定当前运行环境,示例: -env dev")
+	flag.StringVar(&config.Active, "active", "", "指定当前运行环境,示例: -env dev")
 	flag.Parse()
 	// 初始化配置
 	conf := config.NewConfig(config.Path)

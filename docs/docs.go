@@ -48,7 +48,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-entity_PermissionEntity"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-entity_PermissionEntity"
                         }
                     }
                 }
@@ -126,7 +126,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-model_PageData-model_PermissionModel"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_PermissionModel"
                         }
                     }
                 }
@@ -164,7 +164,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-entity_RoleEntity"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-entity_RoleEntity"
                         }
                     }
                 }
@@ -203,7 +203,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-any"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-any"
                         }
                     }
                 }
@@ -240,7 +240,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-any"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-any"
                         }
                     }
                 }
@@ -306,7 +306,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-model_PageData-model_RoleModel"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_RoleModel"
                         }
                     }
                 }
@@ -332,7 +332,7 @@ const docTemplate = `{
                 "summary": "给用户分配角色",
                 "parameters": [
                     {
-                        "description": "用户ID与角色编号",
+                        "description": "用户ID与角色ID",
                         "name": "query",
                         "in": "body",
                         "required": true,
@@ -345,7 +345,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-any"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-any"
                         }
                     }
                 }
@@ -379,7 +379,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-model_UserModel"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-model_UserModel"
                         }
                     }
                 }
@@ -416,7 +416,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-any"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-any"
                         }
                     }
                 }
@@ -488,7 +488,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-model_PageData-model_UserModel"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-com_example_example_model_PageData-model_UserModel"
                         }
                     }
                 }
@@ -522,7 +522,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/result.Result-any"
+                            "$ref": "#/definitions/com_example_example_model_result.Result-any"
                         }
                     }
                 }
@@ -530,6 +530,256 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "com_example_example_model.PageData-model_PermissionModel": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "分页数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PermissionModel"
+                    }
+                },
+                "pageNo": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model.PageData-model_RoleModel": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "分页数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RoleModel"
+                    }
+                },
+                "pageNo": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model.PageData-model_UserModel": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "分页数据",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserModel"
+                    }
+                },
+                "pageNo": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-any": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据"
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-com_example_example_model_PageData-model_PermissionModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/com_example_example_model.PageData-model_PermissionModel"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-com_example_example_model_PageData-model_RoleModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/com_example_example_model.PageData-model_RoleModel"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-com_example_example_model_PageData-model_UserModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/com_example_example_model.PageData-model_UserModel"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-entity_PermissionEntity": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.PermissionEntity"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-entity_RoleEntity": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.RoleEntity"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_model_result.Result-model_UserModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "响应码，200表示成功，其它为失败",
+                    "type": "string"
+                },
+                "data": {
+                    "description": "响应数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.UserModel"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "错误信息",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
+                    "type": "integer"
+                }
+            }
+        },
+        "com_example_example_pkg_types.LocalDateTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.PermissionEntity": {
             "type": "object",
             "properties": {
@@ -541,7 +791,7 @@ const docTemplate = `{
                     "description": "创建时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
@@ -573,7 +823,7 @@ const docTemplate = `{
                     "description": "更新时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
@@ -594,7 +844,7 @@ const docTemplate = `{
                     "description": "创建时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
@@ -622,7 +872,7 @@ const docTemplate = `{
                     "description": "更新时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
@@ -635,88 +885,16 @@ const docTemplate = `{
         "model.AssignRoleModel": {
             "type": "object",
             "required": [
-                "roleCode",
+                "roleId",
                 "userId"
             ],
             "properties": {
-                "roleCode": {
-                    "description": "角色编码",
-                    "type": "string"
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
                 },
                 "userId": {
                     "description": "用户ID",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.PageData-model_PermissionModel": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "总记录数",
-                    "type": "integer"
-                },
-                "data": {
-                    "description": "分页数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PermissionModel"
-                    }
-                },
-                "pageNo": {
-                    "description": "当前页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数量",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.PageData-model_RoleModel": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "总记录数",
-                    "type": "integer"
-                },
-                "data": {
-                    "description": "分页数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.RoleModel"
-                    }
-                },
-                "pageNo": {
-                    "description": "当前页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数量",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.PageData-model_UserModel": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "description": "总记录数",
-                    "type": "integer"
-                },
-                "data": {
-                    "description": "分页数据",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.UserModel"
-                    }
-                },
-                "pageNo": {
-                    "description": "当前页码",
-                    "type": "integer"
-                },
-                "pageSize": {
-                    "description": "每页数量",
                     "type": "integer"
                 }
             }
@@ -785,13 +963,13 @@ const docTemplate = `{
                 "roleName"
             ],
             "properties": {
-                "createAt": {
+                "createdAt": {
                     "description": "创建时间",
                     "type": "string"
                 },
-                "createBy": {
+                "createdBy": {
                     "description": "创建人",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id": {
                     "description": "主键id",
@@ -805,13 +983,13 @@ const docTemplate = `{
                     "description": "角色名称",
                     "type": "string"
                 },
-                "updateAt": {
+                "updatedAt": {
                     "description": "更新时间",
                     "type": "string"
                 },
-                "updateBy": {
+                "updatedBy": {
                     "description": "更新人",
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -852,17 +1030,17 @@ const docTemplate = `{
         "model.UserModel": {
             "type": "object",
             "properties": {
-                "createAt": {
+                "createdAt": {
                     "description": "创建时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
-                "createBy": {
+                "createdBy": {
                     "description": "创建人",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "deleted": {
                     "description": "是否删除 1-否，2-是",
@@ -888,198 +1066,20 @@ const docTemplate = `{
                     "description": "状态: 1-启用，2-禁用",
                     "type": "integer"
                 },
-                "updateAt": {
+                "updatedAt": {
                     "description": "更新时间",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/types.LocalDateTime"
+                            "$ref": "#/definitions/com_example_example_pkg_types.LocalDateTime"
                         }
                     ]
                 },
-                "updateBy": {
+                "updatedBy": {
                     "description": "更新人",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "userName": {
                     "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "result.Result-any": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据"
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-entity_PermissionEntity": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/entity.PermissionEntity"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-entity_RoleEntity": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/entity.RoleEntity"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-model_PageData-model_PermissionModel": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PageData-model_PermissionModel"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-model_PageData-model_RoleModel": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PageData-model_RoleModel"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-model_PageData-model_UserModel": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.PageData-model_UserModel"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "result.Result-model_UserModel": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "响应码，200表示成功，其它为失败",
-                    "type": "string"
-                },
-                "data": {
-                    "description": "响应数据",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.UserModel"
-                        }
-                    ]
-                },
-                "message": {
-                    "description": "错误信息",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "integer"
-                }
-            }
-        },
-        "types.LocalDateTime": {
-            "type": "object",
-            "properties": {
-                "time.Time": {
                     "type": "string"
                 }
             }

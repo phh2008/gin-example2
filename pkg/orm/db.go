@@ -32,9 +32,10 @@ func NewDB(conf *config.Config) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	sqlDB.SetMaxIdleConns(10)           // 空闲最大连接数
-	sqlDB.SetMaxOpenConns(60)           // 最大打开连接数
-	sqlDB.SetConnMaxLifetime(time.Hour) // 连接可重用的时长
+	sqlDB.SetMaxIdleConns(conf.Db.MaxIdleConns)       // 空闲最大连接数
+	sqlDB.SetConnMaxIdleTime(conf.Db.ConnMaxIdleTime) // 最大空闲时间
+	sqlDB.SetMaxOpenConns(conf.Db.MaxOpenConns)       // 最大打开连接数
+	sqlDB.SetConnMaxLifetime(conf.Db.ConnMaxLifetime) // 连接可重用的时长
 	return gdb
 }
 
