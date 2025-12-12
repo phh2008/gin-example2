@@ -1,12 +1,14 @@
 package logger
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"os"
 	"strings"
 	"time"
 
+	"com.example/example/pkg/common"
 	"com.example/example/pkg/config"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
@@ -90,4 +92,10 @@ func newZapLog(conf *config.Log) *zap.Logger {
 	)
 	// 需要传入 zap.AddCaller() 才会显示打日志点的文件名和行数
 	return zap.New(core, zap.AddCaller())
+}
+
+// RequestID 从ctx中获取requestId
+func RequestID(ctx context.Context) slog.Attr {
+	requestId, _ := ctx.Value(common.RequestIdStringKey).(string)
+	return slog.String(common.RequestIdStringKey, requestId)
 }

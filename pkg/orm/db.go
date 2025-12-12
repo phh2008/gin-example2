@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"com.example/example/model"
+	"com.example/example/pkg/common"
 	"com.example/example/pkg/config"
 	"com.example/example/pkg/logger/glog"
 	"com.example/example/pkg/xstring"
@@ -20,6 +21,9 @@ func NewDB(conf *config.Config) *gorm.DB {
 		WithSlowThreshold(time.Second).
 		WithIgnoreRecordNotFoundError(true).
 		WithTraceAll(true)
+	cfg.WithContextKeys(map[string]any{
+		common.RequestIdStringKey: common.RequestIdStringKey,
+	})
 	glogger := glog.NewWithConfig(cfg)
 	var gdb, err = gorm.Open(mysql.Open(conf.Db.Url), &gorm.Config{
 		Logger: glogger,
