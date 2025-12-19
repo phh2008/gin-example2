@@ -11,11 +11,11 @@ build-win:
 	go env -w CGO_ENABLED=0
 	go env -w GOARCH=amd64
 	go env -w GOOS=windows
-	go build -o bin/$(BINARY_NAME).exe ./...
+	go build -o bin/$(BINARY_NAME).exe ./cmd/
 
 build-linux:
 	go mod tidy
 	go env -w CGO_ENABLED=0
 	go env -w GOARCH=amd64
 	go env -w GOOS=linux
-	go build -o bin/$(BINARY_NAME) ./...	
+	go build -o bin/$(BINARY_NAME) ./cmd/	

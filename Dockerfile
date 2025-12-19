@@ -1,24 +1,21 @@
-FROM ubuntu:22.04
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-# 包名
-ENV appName example
-ENV TZ=Asia/Shanghai \
-    DEBIAN_FRONTEND=noninteractive
-# 工作目录
-WORKDIR /app
-# 复制包文件到工作目录
-ADD ${appName} /app/${appName}
-COPY config/ /app/config/
-# 改变容器的时区
-RUN apt update \
-    && apt install -y tzdata \
-    && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
-    && echo ${TZ} > /etc/timezone \
-    && dpkg-reconfigure --frontend noninteractive tzdata \
-    && rm -rf /var/lib/apt/lists/*
-# 端口号
+# 编译源码
+FROM golang:1.25-alpine AS build
+COPY . /go/src/example
+WORKDIR /go/src/example
+RUN go env -w GOPROXY=https://goproxy.cn,direct
+RUN go mod tidy
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /example ./cmd/
+
+# 构建最终镜像
+FROM alpine:latest
+RUN apk add tzdata  \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+COPY --from=build /example /app/example
+COPY --from=build /go/src/example/config/ /app/config/
+
 EXPOSE 8089
 WORKDIR /app
-ENTRYPOINT ./${appName} -config ./config -active dev
+ENTRYPOINT ["./example","-config","./config"]
