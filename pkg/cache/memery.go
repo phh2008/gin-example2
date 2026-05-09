@@ -7,24 +7,24 @@ import (
 	"github.com/jellydator/ttlcache/v3"
 )
 
-type MemeryStorage struct {
+type MemeryCache struct {
 	pool *ttlcache.Cache[string, any]
 }
 
-func NewMemeryStorage() Storage {
-	return &MemeryStorage{
+func NewMemeryCache() Cache {
+	return &MemeryCache{
 		pool: ttlcache.New[string, any](),
 	}
 }
 
 // Set 设置缓存值
-func (a *MemeryStorage) Set(key string, value any, ttl time.Duration) error {
+func (a *MemeryCache) Set(key string, value any, ttl time.Duration) error {
 	a.pool.Set(key, value, ttl)
 	return nil
 }
 
 // Get 获取缓存值，如果不存在则返回nil
-func (a *MemeryStorage) Get(key string) (any, error) {
+func (a *MemeryCache) Get(key string) (any, error) {
 	item := a.pool.Get(key)
 	if item != nil {
 		return item.Value(), nil
@@ -33,7 +33,7 @@ func (a *MemeryStorage) Get(key string) (any, error) {
 }
 
 // Delete 删除缓存
-func (a *MemeryStorage) Delete(keys ...string) error {
+func (a *MemeryCache) Delete(keys ...string) error {
 	for _, key := range keys {
 		a.pool.Delete(key)
 	}
@@ -41,13 +41,13 @@ func (a *MemeryStorage) Delete(keys ...string) error {
 }
 
 // Exists 判断是否存在
-func (a *MemeryStorage) Exists(key string) bool {
+func (a *MemeryCache) Exists(key string) bool {
 	item := a.pool.Get(key)
 	return item != nil && item.Value() != nil
 }
 
 // Expire 设置过期时间
-func (a *MemeryStorage) Expire(key string, ttl time.Duration) error {
+func (a *MemeryCache) Expire(key string, ttl time.Duration) error {
 	item := a.pool.Get(key)
 	if item != nil && item.Value() != nil {
 		a.pool.Set(key, item.Value(), ttl)
@@ -55,7 +55,7 @@ func (a *MemeryStorage) Expire(key string, ttl time.Duration) error {
 	return nil
 }
 
-func (a *MemeryStorage) Keys(pattern string) ([]string, error) {
+func (a *MemeryCache) Keys(pattern string) ([]string, error) {
 	var keys []string
 	pattern = strings.TrimRight(pattern, "*")
 	for _, key := range a.pool.Keys() {
@@ -67,7 +67,7 @@ func (a *MemeryStorage) Keys(pattern string) ([]string, error) {
 }
 
 // Clear 清空所有缓存
-func (a *MemeryStorage) Clear() error {
+func (a *MemeryCache) Clear() error {
 	a.pool.DeleteAll()
 	return nil
 }

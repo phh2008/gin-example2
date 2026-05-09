@@ -2,29 +2,41 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
-type RedisStorage struct {
+type RedisCache struct {
 	client *redis.Client
 }
 
-func NewRedisStorage(client *redis.Client) *RedisStorage {
-	return &RedisStorage{
+func NewRedisCache(client *redis.Client) *RedisCache {
+	return &RedisCache{
 		client: client,
 	}
 }
 
-// Set 设置缓存值
-func (a *RedisStorage) Set(key string, value any, ttl time.Duration) error {
-	return a.client.Set(context.TODO(), key, value, ttl).Err()
+// Set 设置缓存值，string和[]byte直接存储，其他类型JSON序列化
+func (a *RedisCache) Set(key string, value any, ttl time.Duration) error {
+	switch v := value.(type) {
+	case string:
+		return a.client.Set(context.TODO(), key, v, ttl).Err()
+	case []byte:
+		return a.client.Set(context.TODO(), key, v, ttl).Err()
+	default:
+		data, err := json.Marshal(value)
+		if err != nil {
+			return err
+		}
+		return a.client.Set(context.TODO(), key, string(data), ttl).Err()
+	}
 }
 
 // Get 获取缓存值，如果不存在则返回nil
-func (a *RedisStorage) Get(key string) (any, error) {
+func (a *RedisCache) Get(key string) (any, error) {
 	val, err := a.client.Get(context.TODO(), key).Result()
 	if errors.Is(err, redis.Nil) {
 		return nil, nil
@@ -36,7 +48,7 @@ func (a *RedisStorage) Get(key string) (any, error) {
 }
 
 // Delete 删除缓存
-func (a *RedisStorage) Delete(keys ...string) error {
+func (a *RedisCache) Delete(keys ...string) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -44,7 +56,7 @@ func (a *RedisStorage) Delete(keys ...string) error {
 }
 
 // Exists 判断是否存在
-func (a *RedisStorage) Exists(key string) bool {
+func (a *RedisCache) Exists(key string) bool {
 	result, err := a.client.Exists(context.TODO(), key).Result()
 	if err != nil {
 		return false
@@ -53,12 +65,12 @@ func (a *RedisStorage) Exists(key string) bool {
 }
 
 // Expire 设置过期时间
-func (a *RedisStorage) Expire(key string, ttl time.Duration) error {
+func (a *RedisCache) Expire(key string, ttl time.Duration) error {
 	return a.client.Expire(context.TODO(), key, ttl).Err()
 }
 
 // Keys 获取匹配模式的所有键
-func (a *RedisStorage) Keys(pattern string) ([]string, error) {
+func (a *RedisCache) Keys(pattern string) ([]string, error) {
 	ctx := context.TODO()
 	var (
 		cursor uint64
@@ -81,7 +93,7 @@ func (a *RedisStorage) Keys(pattern string) ([]string, error) {
 }
 
 // Clear 清空所有缓存
-func (a *RedisStorage) Clear() error {
+func (a *RedisCache) Clear() error {
 	var cursor uint64
 	ctx := context.TODO()
 	for {

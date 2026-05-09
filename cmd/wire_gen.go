@@ -27,7 +27,7 @@ func BuildServer(conf *config.Config) *bootstrap.Server {
 	engine := bootstrap.NewGin()
 	helloController := controller.NewHelloController()
 	jwtHelper := xjwt.NewJwtHelper(conf)
-	storage := cache.NewMemeryStorage()
+	storage := cache.NewMemeryCache()
 	userRoleRepository := repository.NewUserRoleRepository(db)
 	permissionRepository := repository.NewPermissionRepository(db)
 	authorizeManager := manager.NewAuthorizeManager(storage, userRoleRepository, permissionRepository)

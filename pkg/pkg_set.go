@@ -11,5 +11,5 @@ import (
 var ProviderSet = wire.NewSet(
 	orm.NewDB,
 	xjwt.NewJwtHelper,
-	cache.NewMemeryStorage,
+	cache.NewMemeryCache,
 )

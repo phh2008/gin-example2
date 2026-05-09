@@ -2,7 +2,7 @@ package manager
 
 import (
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -22,12 +22,12 @@ const (
 )
 
 type AuthorizeManager struct {
-	cache          cache.Storage
+	cache          cache.Cache
 	userRoleRepo   *repository.UserRoleRepository
 	permissionRepo *repository.PermissionRepository
 }
 
-func NewAuthorizeManager(cache cache.Storage,
+func NewAuthorizeManager(cache cache.Cache,
 	userRoleRepo *repository.UserRoleRepository,
 	permissionRepo *repository.PermissionRepository) *AuthorizeManager {
 	return &AuthorizeManager{
@@ -38,37 +38,27 @@ func NewAuthorizeManager(cache cache.Storage,
 }
 
 func (a *AuthorizeManager) GetAuthorizeInfo(uid string) (*AuthorizeInfo, error) {
-	// 加载用户的权限信息
-	var info AuthorizeInfo
-	val, _ := a.cache.Get(a.getAuthorizeCacheKey(uid))
-	if val != nil {
-		// 存在缓存
-		err := json.Unmarshal([]byte(val.(string)), &info)
-		if err != nil {
-			slog.Error("invalid data in cache", "error", err)
-			return &info, err
-		}
-	} else {
-		// 数据库中查询
-		res, err := a.loadAuthorizeInfo(uid)
-		if err != nil {
-			slog.Error("load authorizeInfo error", "error", err)
-			return &info, err
-		}
-		if res == nil {
-			return &info, err
-		}
-		info = *res
-		// 写入缓存
-		data, err := json.Marshal(info)
-		if err == nil {
-			err := a.cache.Set(a.getAuthorizeCacheKey(uid), string(data), 10*time.Minute)
-			if err != nil {
-				slog.Error("cache set value error", "error", err)
-			}
-		}
+	info, err := cache.Get[AuthorizeInfo](a.cache, a.getAuthorizeCacheKey(uid))
+	if err == nil {
+		return &info, nil
 	}
-	return &info, nil
+	if !errors.Is(err, cache.ErrNotFound) {
+		slog.Error("cache get error", "error", err)
+	}
+	// 数据库中查询
+	res, err := a.loadAuthorizeInfo(uid)
+	if err != nil {
+		slog.Error("load authorizeInfo error", "error", err)
+		return nil, err
+	}
+	if res == nil {
+		return nil, nil
+	}
+	// 写入缓存
+	if err := cache.Set(a.cache, a.getAuthorizeCacheKey(uid), *res, 10*time.Minute); err != nil {
+		slog.Error("cache set value error", "error", err)
+	}
+	return res, nil
 }
 
 func (a *AuthorizeManager) getAuthorizeCacheKey(uid string) string {
